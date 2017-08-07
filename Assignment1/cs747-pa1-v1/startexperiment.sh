@@ -8,7 +8,8 @@ nRuns=100
 hostname="localhost"
 banditFile="$PWD/data/instance-5.txt"
 
-algorithm="rr"
+# algorithm="rr"
+algorithm="epsilon-greedy"
 # Allowed values for algorithm parameter(case-sensitive)
 # 1. epsilon-greedy
 # 2. UCB
@@ -16,7 +17,7 @@ algorithm="rr"
 # 4. Thompson-Sampling
 # 5. rr
 
-epsilon=0.0
+epsilon=0.1
 
 numArms=$(wc -l $banditFile | cut -d" " -f1 | xargs)
 
