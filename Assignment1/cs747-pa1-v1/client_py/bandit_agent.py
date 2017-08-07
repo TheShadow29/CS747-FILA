@@ -3,7 +3,7 @@ import argparse
 import socket
 from socket import error as SocketError
 import errno
-from bandit_algos import epsilon_greedy
+from bandit_algos import epsilon_greedy, ucb
 # import numpy as np
 # import pdb
 
@@ -45,10 +45,11 @@ def sample_arm(algo, epsilon, pulls, reward, num_arms, pull_list, reward_list):
     if algo == 'rr':
         return pulls % num_arms
     elif algo == 'epsilon-greedy':
-        print('Starting epsilon greedy')
-        return epsilon_greedy(epsilon, pulls, reward, num_arms, rand_seed, pull_list, reward_list)
+        # print('Starting epsilon greedy')
+        return epsilon_greedy(epsilon, num_arms, rand_seed, pull_list, reward_list)
     elif algo == 'UCB':
-        return 1
+        print('Starting UCB')
+        return ucb(pulls, num_arms, reward_list, pull_list)
     elif algo == 'KL-UCB':
         return 1
     elif algo == 'Thompson-Sampling':
@@ -83,6 +84,7 @@ while(s.send(dat) >= 0):
         # pdb.set_trace()
         pulls = int(pulls)
         reward_list[arm_to_pull] += reward
+        pull_list[arm_to_pull] += 1
 
         print('Received reward', reward)
         print('No. of pulls', pulls)

@@ -11,7 +11,7 @@ def get_emp_means(reward_list, pull_list):
     return emp_means
 
 
-def epsilon_greedy(epsilon, pulls, reward, num_arms, random_seed, pull_list, reward_list):
+def epsilon_greedy(epsilon, num_arms, random_seed, pull_list, reward_list):
     '''
     The algo works as follows:
     For some epsilon in [0,1]
@@ -20,6 +20,7 @@ def epsilon_greedy(epsilon, pulls, reward, num_arms, random_seed, pull_list, rew
     Epsilon is a constant given by the user
     It returns the arm to be pulled
     '''
+    # Need to experiment with different epsilon
     random.seed(random_seed)
     emp_means = np.array(get_emp_means(reward_list, pull_list))
     rand_numb = random.random()
@@ -28,5 +29,15 @@ def epsilon_greedy(epsilon, pulls, reward, num_arms, random_seed, pull_list, rew
     else:
         arm_x = random.randint(0, len(reward_list)-1)
 
-    pull_list[arm_x] += 1
     return arm_x
+
+
+def ucb(pulls, num_arms, reward_list, pull_list):
+    # Need to experiment with c * add_term
+    if pulls >= num_arms:
+        emp_means = np.array(get_emp_means(reward_list, pull_list))
+        add_term = 2 * np.log(pulls) * np.divide(np.ones([1, num_arms]), pull_list)
+        ucb_terms = emp_means + add_term
+        return ucb_terms.argmax()
+    else:
+        return pulls % num_arms
