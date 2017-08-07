@@ -3,9 +3,9 @@ import argparse
 import socket
 from socket import error as SocketError
 import errno
-from bandit_algos import epsilon_greedy, ucb
+from bandit_algos import epsilon_greedy, ucb, kl_ucb
 # import numpy as np
-# import pdb
+import pdb
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--numArms", type=int, help="number of arms")
@@ -51,7 +51,8 @@ def sample_arm(algo, epsilon, pulls, reward, num_arms, pull_list, reward_list):
         print('Starting UCB')
         return ucb(pulls, num_arms, reward_list, pull_list)
     elif algo == 'KL-UCB':
-        return 1
+        print('Starting KL-UCB')
+        return kl_ucb(pulls, num_arms, reward_list, pull_list)
     elif algo == 'Thompson-Sampling':
         return 1
     else:
@@ -91,12 +92,15 @@ while(s.send(dat) >= 0):
         arm_to_pull = sample_arm(algo, epsilon, pulls, reward, num_arms, pull_list, reward_list)
 
         dat = str(arm_to_pull)
-    except SocketError as e:
-        if e.errno != errno.ECONNRESET:
-            raise
-        else:
-            # pass
-            break
+    # except SocketError as e:
+    #     if e.errno != errno.ECONNRESET:
+    #         # pdb.set_trace()
+    #         raise
+    #     else:
+    #         # pass
+    #         break
+    except Exception as e:
+        break
 
 
 s.close()

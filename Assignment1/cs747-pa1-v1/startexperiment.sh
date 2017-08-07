@@ -10,7 +10,8 @@ banditFile="$PWD/data/instance-5.txt"
 
 # algorithm="rr"
 # algorithm="epsilon-greedy"
-algorithm="UCB"
+# algorithm="UCB"
+algorithm="KL-UCB"
 
 # Allowed values for algorithm parameter(case-sensitive)
 # 1. epsilon-greedy
