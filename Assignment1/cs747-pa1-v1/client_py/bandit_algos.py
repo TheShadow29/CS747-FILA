@@ -2,6 +2,7 @@ from __future__ import division
 import numpy as np
 import random
 import pdb
+from scipy.stats import beta
 # from scipy.stats import entropy
 
 
@@ -60,6 +61,11 @@ def get_q(rhs, p_hat, u_a):
     return q_list[ind]
 
 
+def draw_from_beta_dist(a, b):
+    beta_dist = beta(a, b)
+    return beta_dist.rvs()
+
+
 def epsilon_greedy(epsilon, num_arms, random_seed, pull_list, reward_list):
     '''
     The algo works as follows:
@@ -104,3 +110,19 @@ def kl_ucb(pulls, num_arms, reward_list, pull_list):
         return qa_nlist.argmax()
     else:
         return pulls % num_arms
+
+
+def thompson_sampling(reward_list, pull_list):
+    # Can assume that #success = reward_list
+    # and #failures = pull_list - reward_list
+    # May want to visualize the beta distribution graphs
+    succ_list = np.array(reward_list)
+    fail_list = np.array(pull_list) - succ_list
+    alpha_list = succ_list + 1
+    beta_list = fail_list + 1
+    xa_list = list()
+    for ind, alph in enumerate(alpha_list):
+        xa_list.append(draw_from_beta_dist(alph, beta_list[ind]))
+
+    xa_nlist = np.array(xa_list)
+    return xa_nlist.argmax()

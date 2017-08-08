@@ -3,7 +3,7 @@ import argparse
 import socket
 from socket import error as SocketError
 import errno
-from bandit_algos import epsilon_greedy, ucb, kl_ucb
+from bandit_algos import epsilon_greedy, ucb, kl_ucb, thompson_sampling
 # import numpy as np
 import pdb
 
@@ -54,7 +54,7 @@ def sample_arm(algo, epsilon, pulls, reward, num_arms, pull_list, reward_list):
         print('Starting KL-UCB')
         return kl_ucb(pulls, num_arms, reward_list, pull_list)
     elif algo == 'Thompson-Sampling':
-        return 1
+        return thompson_sampling(reward_list, pull_list)
     else:
         return -1
 
