@@ -2,17 +2,18 @@
 
 PWD=`pwd`
 
-horizon=400
+# horizon=400
+horizon=100000
 port=5001
 nRuns=100
 hostname="localhost"
 banditFile="$PWD/data/instance-5.txt"
 
 # algorithm="rr"
-# algorithm="epsilon-greedy"
+algorithm="epsilon-greedy"
 # algorithm="UCB"
 # algorithm="KL-UCB"
-algorithm="Thompson-Sampling"
+# algorithm="Thompson-Sampling"
 
 # Allowed values for algorithm parameter(case-sensitive)
 # 1. epsilon-greedy
@@ -29,7 +30,7 @@ SERVERDIR=./server
 CLIENTDIR=./client_py
 # CLIENTDIR=./client
 
-OUTPUTFILE=$PWD/serverlog.txt
+OUTPUTFILE=$PWD/serverlog1.txt
 
 randomSeed=0
 
@@ -46,5 +47,5 @@ cmd="./startclient.sh $numArms $horizon $hostname $port $randomSeed $algorithm $
 #echo $cmd
 # $cmd > /dev/null
 # $cmd > f2.txt
-$cmd
+$cmd > f1.txt
 popd

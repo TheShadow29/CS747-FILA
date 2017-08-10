@@ -61,6 +61,30 @@ def get_q(rhs, p_hat, u_a):
     return q_list[ind]
 
 
+# def get_q_bin(rhs, p_hat, u_a):
+#     if p_hat == 1:
+#         return 1
+#     rhs1 = rhs / u_a
+#     thresh = 1e-6
+#     low = p_hat
+#     high = 1
+#     qkl = KL(p_hat, high)
+#     diff = qkl
+#     while True:
+#         qkl_old = qkl
+#         q1 = (high + low) / 2
+#         qkl = KL(p_hat, q1)
+#         diff = qkl - rhs1
+#         if diff >= 0 and diff < 1e-6:
+#             break
+#         else:
+#             if diff > diff_old:
+
+#             else:
+#                 q1 =
+
+
+
 def draw_from_beta_dist(a, b):
     beta_dist = beta(a, b)
     return beta_dist.rvs()
@@ -76,14 +100,26 @@ def epsilon_greedy(epsilon, num_arms, random_seed, pull_list, reward_list):
     It returns the arm to be pulled
     '''
     # Need to experiment with different epsilon
-    random.seed(random_seed)
+    # random.seed(random_seed)
     emp_means = np.array(get_emp_means(reward_list, pull_list))
     rand_numb = random.random()
+    print(rand_numb)
     if rand_numb > epsilon:
-        arm_x = emp_means.argmax()
+        print('exploit')
+        # arm_x = emp_means.argmax()
+        bool1 = True
+        for ind, pl in enumerate(pull_list):
+            if pl == 0:
+                arm_x = ind
+                bool1 = False
+        if bool1:
+            arm_x = emp_means.argmax()
+
     else:
+        print('explore')
         arm_x = random.randint(0, len(reward_list)-1)
 
+    print('Arm', arm_x)
     return arm_x
 
 
@@ -92,7 +128,8 @@ def ucb(pulls, num_arms, reward_list, pull_list):
     if pulls >= num_arms:
         emp_means = np.array(get_emp_means(reward_list, pull_list))
         add_term = 2 * np.log(pulls) * np.divide(np.ones([1, num_arms]), pull_list)
-        ucb_terms = emp_means + add_term
+        ucb_terms = emp_means + add_term**(0.5)
+        print('ucb_terms', ucb_terms)
         return ucb_terms.argmax()
     else:
         return pulls % num_arms

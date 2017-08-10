@@ -6,6 +6,7 @@ import errno
 from bandit_algos import epsilon_greedy, ucb, kl_ucb, thompson_sampling
 # import numpy as np
 import pdb
+import random
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--numArms", type=int, help="number of arms")
@@ -40,12 +41,22 @@ if args.algorithm:
 if args.epsilon:
     epsilon = args.epsilon
 
+random.seed(rand_seed)
+
+
+def print_reward_list(reward_list, pull_list):
+    s = ''
+    for ind, r in enumerate(reward_list):
+        s += ' Arm: ' + str(ind) + ' : ' + str(r) + '/' + str(pull_list[ind]) + ' '
+    print(s)
+
 
 def sample_arm(algo, epsilon, pulls, reward, num_arms, pull_list, reward_list):
     if algo == 'rr':
         return pulls % num_arms
     elif algo == 'epsilon-greedy':
-        # print('Starting epsilon greedy')
+        print('Starting epsilon greedy')
+        # random.seed(rand_seed)
         return epsilon_greedy(epsilon, num_arms, rand_seed, pull_list, reward_list)
     elif algo == 'UCB':
         print('Starting UCB')
@@ -58,6 +69,10 @@ def sample_arm(algo, epsilon, pulls, reward, num_arms, pull_list, reward_list):
     else:
         return -1
 
+
+print('Starting the code :', 'numArms', num_arms,
+      'randomSeed', rand_seed, 'horizon', horizon,
+      'hostname', hostname, 'port', port, 'algo', algo, 'epsilon', epsilon)
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 host = socket.gethostbyname(hostname)
@@ -89,6 +104,7 @@ while(s.send(dat) >= 0):
 
         print('Received reward', reward)
         print('No. of pulls', pulls)
+        print_reward_list(reward_list, pull_list)
         arm_to_pull = sample_arm(algo, epsilon, pulls, reward, num_arms, pull_list, reward_list)
 
         dat = str(arm_to_pull)
