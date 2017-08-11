@@ -4,7 +4,7 @@ PWD=`pwd`
 
 horizon=$3
 # horizon=100000
-port=5001
+port=$5
 nRuns=100
 hostname="localhost"
 banditFile="$PWD/data/instance-5.txt"
