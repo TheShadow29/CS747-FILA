@@ -1,0 +1,60 @@
+\documentclass{article}
+\usepackage[a4paper, tmargin=1in, bmargin=1in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage[justification=centering]{caption}
+
+% \usepackage{parskip}
+\usepackage{pdflscape}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+
+\title{CS 747 : Foundations of Intelligent Learning Agents Assignment 1}
+\author{Arka Sadhu - 140070011}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Epsilon-Greedy}
+The epsilon-greedy algorithm works as follows :
+\begin{itemize}
+\item We choose some $\varepsilon$ in the range $[0,1]$.
+\item Then we choose the bandit with the highest empirical mean with probability $1 - \varepsilon$ and with probability $\varepsilon$ sample an arm at random.
+\item $\varepsilon$ is a constant given by the user.
+\end{itemize}
+
+\section{Upper Confidence Bound (UCB)}
+The upper confidence bound (UCB) algorithm works as follows :
+\begin{itemize}
+\item We first pull each arm once in a round robin fashion.
+\item Then we compute the empirical mean of each arm. This is followed by an additional term which then gives the ucb for the corresponding arm.
+  $$ ucb_a^t = \hat{p_a}^t + \sqrt{\frac{2 * ln(t)}{u_a^{t}}}$$
+\item At each instance we choose the arm with the highest ucb value.
+\end{itemize}
+
+\section{KL-UCB}
+This is the KL version of the UCB and works as follows :
+\begin{itemize}
+\item We again pull each arm once in a round robin fashion.
+\item Then for each arm we define a parameter $q_a$ such that $q_a \in [\hat{p_a},1]$ and it is the least real number to satisfy the inequality \ref{eq:kl_ucb}
+  \begin{equation}
+    \label{eq:kl_ucb}
+    u_a^t KL(\hat{p_a^t}, q) \ge ln(t) + cln(ln(t))
+  \end{equation}
+\item We then choose the arm with the highest $q_a$
+\item Since KL is a monotonically increasing function, we employ binary search algorithm to search for $q_a$.
+\end{itemize}
+
+\section{Thompson Sampling}
+Thompson Sampling algorihtm works as follows:
+\begin{itemize}
+\item We start by pulling each arm once in a round robin fashion till each arm is sampled once.
+\item Then we note each success and failure for a particular arm. Then we generate a beta distribution whose parameters are $\alpha = success + 1$ and $\beta = failures + 1$.
+\item We then sample a number $x$ from the generated beta distribution for the corresponding arm and choose the arm with highest number sampled.
+\end{itemize}
+
+\end{document}

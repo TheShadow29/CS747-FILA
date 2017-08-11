@@ -61,28 +61,29 @@ def get_q(rhs, p_hat, u_a):
     return q_list[ind]
 
 
-# def get_q_bin(rhs, p_hat, u_a):
-#     if p_hat == 1:
-#         return 1
-#     rhs1 = rhs / u_a
-#     thresh = 1e-6
-#     low = p_hat
-#     high = 1
-#     qkl = KL(p_hat, high)
-#     diff = qkl
-#     while True:
-#         qkl_old = qkl
-#         q1 = (high + low) / 2
-#         qkl = KL(p_hat, q1)
-#         diff = qkl - rhs1
-#         if diff >= 0 and diff < 1e-6:
-#             break
-#         else:
-#             if diff > diff_old:
-
-#             else:
-#                 q1 =
-
+def get_q_bin(rhs, p_hat, u_a):
+    if p_hat == 1:
+        return 1
+    rhs1 = rhs / u_a
+    thresh = 1e-6
+    low = p_hat
+    high = 1
+    # i = 0
+    while True:
+        # print('Iter', i)
+        # i += 1
+        mid = (low + high)/2
+        qkl = KL(p_hat, mid)
+        diff = qkl - rhs1
+        if diff > 0 and diff < thresh:
+            return mid
+        else:
+            if diff > 0:
+                high = mid
+                # mid = (mid + low)/2
+            else:
+                low = mid
+                # mid = (mid + high)/2
 
 
 def draw_from_beta_dist(a, b):
@@ -142,7 +143,7 @@ def kl_ucb(pulls, num_arms, reward_list, pull_list):
         emp_means = np.array(get_emp_means(reward_list, pull_list))
         qa_list = list()
         for ind, ua_t in enumerate(pull_list):
-            qa_list.append(get_q(rhs, emp_means[ind], ua_t))
+            qa_list.append(get_q_bin(rhs, emp_means[ind], ua_t))
         qa_nlist = np.array(qa_list)
         return qa_nlist.argmax()
     else:

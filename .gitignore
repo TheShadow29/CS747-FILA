@@ -2,3 +2,7 @@
 *serverlog.txt
 *.pyc
 *.txt
+*.log
+*.aux
+*.out
+*auto/
