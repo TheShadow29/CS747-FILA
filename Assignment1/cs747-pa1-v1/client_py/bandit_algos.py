@@ -86,9 +86,9 @@ def get_q_bin(rhs, p_hat, u_a):
                 # mid = (mid + high)/2
 
 
-def draw_from_beta_dist(a, b):
-    beta_dist = beta(a, b)
-    return beta_dist.rvs()
+# def draw_from_beta_dist(a, b):
+#     beta_dist = beta(a, b)
+#     return beta_dist.rvs()
 
 
 def epsilon_greedy(epsilon, num_arms, random_seed, pull_list, reward_list):

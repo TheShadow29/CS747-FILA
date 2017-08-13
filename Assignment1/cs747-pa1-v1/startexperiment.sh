@@ -3,14 +3,17 @@
 PWD=`pwd`
 
 # horizon=400
-horizon=100000
-port=5001
+horizon=29
+# horizon=100000
+# port=5002
+port=$1
 nRuns=100
 hostname="localhost"
-banditFile="$PWD/data/instance-5.txt"
+banditFile="$PWD/data/instance-25.txt"
+# banditFile="$PWD/data/instance-5.txt"
 
-# algorithm="rr"
-algorithm="epsilon-greedy"
+algorithm="rr"					#
+# algorithm="epsilon-greedy"
 # algorithm="UCB"
 # algorithm="KL-UCB"
 # algorithm="Thompson-Sampling"
@@ -30,7 +33,8 @@ SERVERDIR=./server
 CLIENTDIR=./client_py
 # CLIENTDIR=./client
 
-OUTPUTFILE=$PWD/serverlog1.txt
+# OUTPUTFILE=$PWD/serverlog1.txt
+OUTPUTFILE=$PWD/serverlog2.txt
 # OUTPUTFILE=$PWD/eval/$horizon/$2
 
 randomSeed=0
@@ -38,6 +42,7 @@ randomSeed=0
 pushd $SERVERDIR
 cmd="./startserver.sh $numArms $horizon $port $banditFile $randomSeed $OUTPUTFILE &"
 #echo $cmd
+# $cmd > s1.txt
 $cmd
 popd
 

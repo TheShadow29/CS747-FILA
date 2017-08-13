@@ -123,8 +123,9 @@ int getArmFromAgent(int &clientSock){
 
   //  cout << "Waiting for client message...\n";
   if(recv(clientSock, recvBuf, 256, 0) > 0){
-	cout << "Received message: " << recvBuf << ".\n";
+	// cout << "Received message: " << recvBuf << ".\n";
 	sscanf(recvBuf, "%d", &arm);
+	cout << "Received message: " << arm << ".\n";
   }
   else{
 	cout << "Did not receive message.\n";
