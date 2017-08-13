@@ -1,4 +1,5 @@
 from subprocess import call
+from subprocess import Popen
 import os
 # import argparse
 
@@ -37,3 +38,13 @@ for i in range(100):
     file_path = dir_path + '/rs_' + str(i) + '.txt'
     print(file_path)
     call(['./exp.sh', str(i), file_path, str(horizon), algo, str(port)])
+# procs = list()
+# for i in range(30, 60):
+#     # i denotes the random seed
+#     file_path = dir_path + '/rs_' + str(i) + '.txt'
+#     print(file_path)
+#     p_args = ['./exp.sh', str(i), file_path, str(horizon), algo, str(port + i)]
+#     p = Popen(p_args)
+#     procs.append(p)
+
+return_codes = [p1.wait() for p1 in procs]

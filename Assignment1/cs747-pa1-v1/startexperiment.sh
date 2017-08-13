@@ -2,8 +2,8 @@
 
 PWD=`pwd`
 
-horizon=400
-# horizon=100000
+# horizon=400
+horizon=100000
 port=5001
 nRuns=100
 hostname="localhost"

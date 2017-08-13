@@ -2,7 +2,7 @@ from __future__ import division
 import numpy as np
 import random
 import pdb
-from scipy.stats import beta
+# from scipy.stats import beta
 # from scipy.stats import entropy
 
 
@@ -158,9 +158,9 @@ def thompson_sampling(reward_list, pull_list):
     fail_list = np.array(pull_list) - succ_list
     alpha_list = succ_list + 1
     beta_list = fail_list + 1
-    xa_list = list()
-    for ind, alph in enumerate(alpha_list):
-        xa_list.append(draw_from_beta_dist(alph, beta_list[ind]))
-
-    xa_nlist = np.array(xa_list)
+    # xa_list = list()
+    # for ind, alph in enumerate(alpha_list):
+    #     xa_list.append(draw_from_beta_dist(alph, beta_list[ind]))
+    xa_nlist = np.random.beta(alpha_list, beta_list)
+    # xa_nlist = np.array(xa_list)
     return xa_nlist.argmax()
