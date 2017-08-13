@@ -10,10 +10,10 @@ hostname="localhost"
 banditFile="$PWD/data/instance-5.txt"
 
 # algorithm="rr"
-# algorithm="epsilon-greedy"
+algorithm="epsilon-greedy"
 # algorithm="UCB"
 # algorithm="KL-UCB"
-algorithm="Thompson-Sampling"
+# algorithm="Thompson-Sampling"
 
 # Allowed values for algorithm parameter(case-sensitive)
 # 1. epsilon-greedy

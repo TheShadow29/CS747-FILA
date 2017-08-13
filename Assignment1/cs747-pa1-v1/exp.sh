@@ -7,7 +7,7 @@ horizon=$3
 port=$5
 nRuns=100
 hostname="localhost"
-banditFile="$PWD/data/instance-5.txt"
+banditFile="$PWD/data/instance-25.txt"
 
 algorithm=$4
 # algorithm="rr"

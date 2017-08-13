@@ -76,7 +76,15 @@ print('Starting the code :', 'numArms', num_arms,
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 host = socket.gethostbyname(hostname)
+# guess = True
 s.connect((host, port))
+# while guess:
+# try:
+#
+#     guess = False
+# except Exception as e:
+#     print('server socket not open yet')
+#     guess = True
 
 reward = 0
 pulls = 0

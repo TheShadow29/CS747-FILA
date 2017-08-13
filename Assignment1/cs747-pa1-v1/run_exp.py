@@ -14,9 +14,9 @@ horizon = 100000
 # port = 5003
 # port = 5004
 # algo = 'epsilon-greedy'
-# algo = 'UCB'
+algo = 'UCB'
 # algo = 'KL-UCB'
-algo = 'Thompson-Sampling'
+# algo = 'Thompson-Sampling'
 if algo == 'UCB':
     port = 5002
 elif algo == 'KL-UCB':
@@ -24,9 +24,9 @@ elif algo == 'KL-UCB':
 elif algo == 'Thompson-Sampling':
     port = 5004
 else:
-    port = 5001
+    port = 5005
 
-dir_path = './eval/' + algo + '/' + str(horizon)
+dir_path = './eval/instance_2/' + algo + '/' + str(horizon)
 if not os.path.exists(dir_path):
     os.makedirs(dir_path)
 dir_path = dir_path[2:]
@@ -38,6 +38,8 @@ for i in range(100):
     file_path = dir_path + '/rs_' + str(i) + '.txt'
     print(file_path)
     call(['./exp.sh', str(i), file_path, str(horizon), algo, str(port)])
+
+
 # procs = list()
 # for i in range(30, 60):
 #     # i denotes the random seed
@@ -47,4 +49,4 @@ for i in range(100):
 #     p = Popen(p_args)
 #     procs.append(p)
 
-return_codes = [p1.wait() for p1 in procs]
+# return_codes = [p1.wait() for p1 in procs]
