@@ -17,7 +17,7 @@ def read_data(fname):
     trans_string = [m.split('\t')[:-1] for m in mdp_file_lines[2+tot_action_num*tot_states_num:-1]]
     trans_fn = np.array(trans_string, dtype=np.float32).reshape((tot_states_num,
                                                                  tot_action_num, tot_states_num))
-    gamma = mdp_file_lines[-1]
+    gamma = float(mdp_file_lines[-1])
     return tot_states_num, tot_action_num, reward_fn, trans_fn, gamma
 
 
@@ -30,4 +30,6 @@ if __name__ == '__main__':
     batch_size = 10
     solver = mdp_solver(tot_states_num, tot_action_num, reward_matrix,
                         trans_matrix, gamma, batch_size, random_seed)
+    # solver.gamma = 0
+    solver.linear_programming()
     # if algo == 'lp':
