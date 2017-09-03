@@ -2,6 +2,8 @@ import numpy as np
 # from pulp import *
 import pulp
 import pdb
+import random
+
 
 class mdp_solver(object):
     def __init__(self, S, A, reward_mat, trans_mat, _gamma,  _batch_size, _random_seed):
@@ -90,22 +92,71 @@ class mdp_solver(object):
             policy_new[s] = a
         return policy_new
 
+    def get_t_pi(self, value_fn, eps):
+        t_pi = list()
+        for s in range(self.tot_states_num):
+            for a in range(self.tot_action_num):
+                if self.q_pi(s, a, value_fn) - value_fn[s] > eps:
+                    t_pi.append((s, a))
+
+        return t_pi
+
     def howard_pi(self):
         eps = 1e-6
         policy_curr = np.zeros(self.tot_states_num, dtype=int)
         while True:
             value_fn = self.policy_to_value_fn(policy_curr)
-            t_pi = list()
-
-            for s in range(self.tot_states_num):
-                for a in range(self.tot_action_num):
-                    if self.q_pi(s, a, value_fn) - value_fn[s] > eps:
-                        t_pi.append((s, a))
-
+            t_pi = self.get_t_pi(value_fn, eps)
             if len(t_pi) == 0:
                 break
             else:
                 policy_curr = self.modify_policy(policy_curr, t_pi)
+
+        self.output_print(value_fn, policy_curr)
+        return value_fn, policy_curr
+
+    def random_pi(self):
+        eps = 1e-6
+        policy_curr = np.zeros(self.tot_states_num, dtype=int)
+
+        while True:
+            value_fn = self.policy_to_value_fn(policy_curr)
+            t_pi = self.get_t_pi(value_fn, eps)
+            if len(t_pi) == 0:
+                break
+            else:
+                U = list()
+                for i in range(len(t_pi)):
+                    if random.random() > 0.5:
+                        U.append(t_pi[i])
+                policy_curr = self.modify_policy(policy_curr, U)
+
+        self.output_print(value_fn, policy_curr)
+        return value_fn, policy_curr
+
+    def batch_switch_pi(self):
+        b = self.batch_size
+        eps = 1e-6
+        policy_curr = np.zeros(self.tot_states_num, dtype=int)
+        states_list = np.arange(self.tot_states_num)
+        batch_list = np.split(states_list, np.arange(b, self.tot_states_num, b))
+        # pdb.set_trace()
+
+        while True:
+            value_fn = self.policy_to_value_fn(policy_curr)
+            t_pi = self.get_t_pi(value_fn, eps)
+            U = [u for u, a in t_pi]
+            if len(t_pi) == 0:
+                break
+            else:
+                j = int(np.floor(self.tot_states_num/b))
+                while min(batch_list[j]) > max(U):
+                    j = j-1
+                u_list = list()
+                for ind, i in enumerate(U):
+                    if i in batch_list[j]:
+                        u_list.append(t_pi[ind])
+                policy_curr = self.modify_policy(policy_curr, u_list)
 
         self.output_print(value_fn, policy_curr)
         return value_fn, policy_curr

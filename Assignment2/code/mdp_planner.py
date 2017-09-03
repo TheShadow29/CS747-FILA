@@ -1,6 +1,6 @@
 import numpy as np
 from mdp_algos import mdp_solver
-
+import random
 
 def read_data(fname):
     # fname = '../data/MDP10.txt'
@@ -23,17 +23,25 @@ def read_data(fname):
 
 
 if __name__ == '__main__':
-    fname = '../data/MDP2.txt'
+    fname = '../data/MDP10.txt'
     tot_states_num, tot_action_num, reward_matrix, trans_matrix, gamma = read_data(fname)
 
     # algo = 'lp'
-    algo = 'hpi'
+    algo = 'bspi'
     random_seed = 0
-    batch_size = 10
+    batch_size = 3
     solver = mdp_solver(tot_states_num, tot_action_num, reward_matrix,
                         trans_matrix, gamma, batch_size, random_seed)
-
+    random.seed(random_seed)
     if algo == 'lp':
+        print('Linear programming')
         opt_value_fn, opt_policy = solver.linear_programming()
     elif algo == 'hpi':
+        print('Howard Policy Iteration')
         opt_value_fn, opt_policy = solver.howard_pi()
+    elif algo == 'rpi':
+        print('Random Policy Iteration')
+        opt_value_fn, opt_policy = solver.random_pi()
+    elif algo == 'bspi':
+        print('BSPI')
+        solver.batch_switch_pi()
