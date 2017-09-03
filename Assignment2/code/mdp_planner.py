@@ -23,14 +23,17 @@ def read_data(fname):
 
 
 if __name__ == '__main__':
-    fname = '../data/MDP10.txt'
+    fname = '../data/MDP2.txt'
     tot_states_num, tot_action_num, reward_matrix, trans_matrix, gamma = read_data(fname)
 
-    algo = 'lp'
+    # algo = 'lp'
+    algo = 'hpi'
     random_seed = 0
     batch_size = 10
     solver = mdp_solver(tot_states_num, tot_action_num, reward_matrix,
                         trans_matrix, gamma, batch_size, random_seed)
-    # solver.gamma = 0
-    opt_value_fn, opt_policy = solver.linear_programming()
-    # if algo == 'lp':
+
+    if algo == 'lp':
+        opt_value_fn, opt_policy = solver.linear_programming()
+    elif algo == 'hpi':
+        opt_value_fn, opt_policy = solver.howard_pi()

@@ -24,8 +24,9 @@ class mdp_solver(object):
     def policy_to_value_fn(self, policy):
         prob = pulp.LpProblem('mdp_lp', pulp.LpMinimize)
         states = np.arange(self.tot_states_num)
-        v_pi = pulp.LpVariable.dicts('v_star', states)
+        v_pi = pulp.LpVariable.dicts('v_pi', states)
         prob += 0
+        # pdb.set_trace()
         for s in range(self.tot_states_num):
             prob += pulp.lpSum((self.trans_matrix[s, policy[s], s_prime] *
                                 (self.reward_matrix[s, policy[s], s_prime] +
@@ -77,5 +78,34 @@ class mdp_solver(object):
         self.output_print(value_func, policy)
         return value_func, policy
 
-    # def howard_pi(self):
-    #     policy_init = np.zeros(self.tot_states_num)
+    def q_pi(self, s, a, value_fn):
+        return sum([self.trans_matrix[s, a, s_prime] *
+                    (self.reward_matrix[s, a, s_prime] +
+                     self.gamma * value_fn[s_prime])
+                    for s_prime in range(self.tot_states_num)])
+
+    def modify_policy(self, policy_curr, U):
+        policy_new = policy_curr.copy()
+        for s, a in U:
+            policy_new[s] = a
+        return policy_new
+
+    def howard_pi(self):
+        eps = 1e-6
+        policy_curr = np.zeros(self.tot_states_num, dtype=int)
+        while True:
+            value_fn = self.policy_to_value_fn(policy_curr)
+            t_pi = list()
+
+            for s in range(self.tot_states_num):
+                for a in range(self.tot_action_num):
+                    if self.q_pi(s, a, value_fn) - value_fn[s] > eps:
+                        t_pi.append((s, a))
+
+            if len(t_pi) == 0:
+                break
+            else:
+                policy_curr = self.modify_policy(policy_curr, t_pi)
+
+        self.output_print(value_fn, policy_curr)
+        return value_fn, policy_curr
