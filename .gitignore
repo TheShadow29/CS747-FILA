@@ -8,3 +8,4 @@
 *auto/
 *.pkl
 *.zip
+*.ipynb_checkpoints/
