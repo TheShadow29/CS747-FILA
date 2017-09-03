@@ -12,6 +12,7 @@ class mdp_solver(object):
         self.gamma = _gamma
         self.batch_size = _batch_size
         self.rand_seed = _random_seed
+        self.out_format = '{} {}\n'
         return
 
     # def value_funciton(self, policy, curr_state):
@@ -24,6 +25,18 @@ class mdp_solver(object):
     #         tmp3 = self.gamma * self.value_funciton(policy, s_prime)
     #         vf += tmp1 * (tmp2 + tmp3)
     #     return vf
+    def value_func_to_policy(self, value_func):
+        # policy = np.zeros(self.tot_states_num)
+        q_star = np.zeros((self.tot_states_num, self.tot_action_num))
+        for s in range(self.tot_states_num):
+            for a in range(self.tot_action_num):
+                q_star[s, a] = sum([self.trans_matrix[s, a, s_prime] *
+                                    (self.reward_matrix[s, a, s_prime] +
+                                     self.gamma * value_func[s_prime])
+                                    for s_prime in range(self.tot_states_num)])
+        policy = np.argmax(q_star, axis=1)
+        return policy
+
     def linear_programming(self):
         prob = pulp.LpProblem('mdp_lp', pulp.LpMinimize)
         states = np.arange(0, self.tot_states_num, dtype=int)
@@ -39,6 +52,14 @@ class mdp_solver(object):
 
         prob.writeLP('mdp2.lp')
         prob.solve()
-        print("Status:", pulp.LpStatus[prob.status])
+        # print("Status:", pulp.LpStatus[prob.status])
+        value_func = np.zeros(self.tot_states_num)
         for s in range(self.tot_states_num):
-            print(v_star[s])
+            value_func[s] = pulp.value(v_star[s])
+            # print(pulp.value(v_star[s]))
+        # print(value_func)
+        policy = self.value_func_to_policy(value_func)
+        str_to_print = ''
+        for s in range(self.tot_states_num):
+            str_to_print += self.out_format.format(value_func[s], policy[s])
+        print(str_to_print)
