@@ -1,6 +1,8 @@
 import numpy as np
 from mdp_algos import mdp_solver
 import random
+import argparse
+
 
 def read_data(fname):
     # fname = '../data/MDP10.txt'
@@ -23,25 +25,40 @@ def read_data(fname):
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--mdp", type=str, help="file path for mdp")
+    parser.add_argument('--randomseed', type=int, help='random seed')
+    parser.add_argument('--algorithm', type=str, help='which algo')
+    parser.add_argument('--batchsize', type=float, help='batch size for bspi')
+
+    args = parser.parse_args()
+
     fname = '../data/MDP10.txt'
+    batch_size = 1
+    random_seed = 0
+    algo = 'bspi'
+    if args.mdp:
+        fname = args.mdp
+    if args.batchsize:
+        batch_size = args.batchsize
+    if args.randomseed:
+        random_seed = args.randomseed
+    if args.algorithm:
+        algo = args.algorithm
     tot_states_num, tot_action_num, reward_matrix, trans_matrix, gamma = read_data(fname)
 
-    # algo = 'lp'
-    algo = 'bspi'
-    random_seed = 0
-    batch_size = 3
     solver = mdp_solver(tot_states_num, tot_action_num, reward_matrix,
                         trans_matrix, gamma, batch_size, random_seed)
     random.seed(random_seed)
     if algo == 'lp':
-        print('Linear programming')
+        # print('Linear programming')
         opt_value_fn, opt_policy = solver.linear_programming()
     elif algo == 'hpi':
-        print('Howard Policy Iteration')
+        # print('Howard Policy Iteration')
         opt_value_fn, opt_policy = solver.howard_pi()
     elif algo == 'rpi':
-        print('Random Policy Iteration')
+        # print('Random Policy Iteration')
         opt_value_fn, opt_policy = solver.random_pi()
     elif algo == 'bspi':
-        print('BSPI')
-        solver.batch_switch_pi()
+        # print('BSPI')
+        opt_value_fn, opt_policy = solver.batch_switch_pi()

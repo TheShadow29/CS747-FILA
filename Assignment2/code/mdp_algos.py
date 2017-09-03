@@ -17,9 +17,10 @@ class mdp_solver(object):
         return
 
     def output_print(self, value_func, policy):
-        out_format = '{} {}\n'
+        out_format = '{0:.6f} {1:d}\n'
         str_to_print = ''
         for s in range(self.tot_states_num):
+            # pdb.set_trace()
             str_to_print += out_format.format(value_func[s], policy[s])
         print(str_to_print)
 
@@ -149,7 +150,8 @@ class mdp_solver(object):
             if len(t_pi) == 0:
                 break
             else:
-                j = int(np.floor(self.tot_states_num/b))
+                j = int(np.ceil(self.tot_states_num/b)) - 1
+                # pdb.set_trace()
                 while min(batch_list[j]) > max(U):
                     j = j-1
                 u_list = list()
