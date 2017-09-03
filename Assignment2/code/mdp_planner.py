@@ -1,6 +1,7 @@
 import numpy as np
 from mdp_algos import mdp_solver
 
+
 def read_data(fname):
     # fname = '../data/MDP10.txt'
     mdp_file = open(fname, 'r')
@@ -22,7 +23,7 @@ def read_data(fname):
 
 
 if __name__ == '__main__':
-    fname = '../data/MDP2.txt'
+    fname = '../data/MDP10.txt'
     tot_states_num, tot_action_num, reward_matrix, trans_matrix, gamma = read_data(fname)
 
     algo = 'lp'
@@ -31,5 +32,5 @@ if __name__ == '__main__':
     solver = mdp_solver(tot_states_num, tot_action_num, reward_matrix,
                         trans_matrix, gamma, batch_size, random_seed)
     # solver.gamma = 0
-    solver.linear_programming()
+    opt_value_fn, opt_policy = solver.linear_programming()
     # if algo == 'lp':

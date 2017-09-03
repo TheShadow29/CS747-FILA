@@ -12,19 +12,34 @@ class mdp_solver(object):
         self.gamma = _gamma
         self.batch_size = _batch_size
         self.rand_seed = _random_seed
-        self.out_format = '{} {}\n'
         return
 
-    # def value_funciton(self, policy, curr_state):
-    #     # Assume policy to be a vector with ind corresponding to action
-    #     # curr_state is current index
-    #     vf = 0
-    #     for s_prime in range(self.tot_states_num):
-    #         tmp1 = self.trans_matrix[curr_state, policy[curr_state], s_prime]
-    #         tmp2 = self.reward_matrix[curr_state, policy[curr_state], s_prime]
-    #         tmp3 = self.gamma * self.value_funciton(policy, s_prime)
-    #         vf += tmp1 * (tmp2 + tmp3)
-    #     return vf
+    def output_print(self, value_func, policy):
+        out_format = '{} {}\n'
+        str_to_print = ''
+        for s in range(self.tot_states_num):
+            str_to_print += out_format.format(value_func[s], policy[s])
+        print(str_to_print)
+
+    def policy_to_value_fn(self, policy):
+        prob = pulp.LpProblem('mdp_lp', pulp.LpMinimize)
+        states = np.arange(self.tot_states_num)
+        v_pi = pulp.LpVariable.dicts('v_star', states)
+        prob += 0
+        for s in range(self.tot_states_num):
+            prob += pulp.lpSum((self.trans_matrix[s, policy[s], s_prime] *
+                                (self.reward_matrix[s, policy[s], s_prime] +
+                                 self.gamma * v_pi[s_prime]))
+                               for s_prime in range(self.tot_states_num)) == v_pi[s], ""
+        prob.writeLP('v_pi.lp')
+        prob.solve()
+        # print("Status:", pulp.LpStatus[prob.status])
+        value_fn = np.zeros(self.tot_states_num)
+        for s in range(self.tot_states_num):
+            value_fn[s] = pulp.value(v_pi[s])
+
+        return value_fn
+
     def value_func_to_policy(self, value_func):
         # policy = np.zeros(self.tot_states_num)
         q_star = np.zeros((self.tot_states_num, self.tot_action_num))
@@ -59,7 +74,8 @@ class mdp_solver(object):
             # print(pulp.value(v_star[s]))
         # print(value_func)
         policy = self.value_func_to_policy(value_func)
-        str_to_print = ''
-        for s in range(self.tot_states_num):
-            str_to_print += self.out_format.format(value_func[s], policy[s])
-        print(str_to_print)
+        self.output_print(value_func, policy)
+        return value_func, policy
+
+    # def howard_pi(self):
+    #     policy_init = np.zeros(self.tot_states_num)
