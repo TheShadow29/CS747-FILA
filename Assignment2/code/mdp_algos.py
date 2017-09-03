@@ -78,7 +78,7 @@ class mdp_solver(object):
             # print(pulp.value(v_star[s]))
         # print(value_func)
         policy = self.value_func_to_policy(value_func)
-        self.output_print(value_func, policy)
+        # self.output_print(value_func, policy)
         return value_func, policy
 
     def q_pi(self, s, a, value_fn):
@@ -105,7 +105,9 @@ class mdp_solver(object):
     def howard_pi(self):
         eps = 1e-6
         policy_curr = np.zeros(self.tot_states_num, dtype=int)
+        it = 0
         while True:
+            it += 1
             value_fn = self.policy_to_value_fn(policy_curr)
             t_pi = self.get_t_pi(value_fn, eps)
             if len(t_pi) == 0:
@@ -113,14 +115,15 @@ class mdp_solver(object):
             else:
                 policy_curr = self.modify_policy(policy_curr, t_pi)
 
-        self.output_print(value_fn, policy_curr)
-        return value_fn, policy_curr
+        # self.output_print(value_fn, policy_curr)
+        return value_fn, policy_curr, it
 
     def random_pi(self):
         eps = 1e-6
         policy_curr = np.zeros(self.tot_states_num, dtype=int)
-
+        it = 0
         while True:
+            it += 1
             value_fn = self.policy_to_value_fn(policy_curr)
             t_pi = self.get_t_pi(value_fn, eps)
             if len(t_pi) == 0:
@@ -132,8 +135,8 @@ class mdp_solver(object):
                         U.append(t_pi[i])
                 policy_curr = self.modify_policy(policy_curr, U)
 
-        self.output_print(value_fn, policy_curr)
-        return value_fn, policy_curr
+        # self.output_print(value_fn, policy_curr)
+        return value_fn, policy_curr, it
 
     def batch_switch_pi(self):
         b = self.batch_size
@@ -142,8 +145,9 @@ class mdp_solver(object):
         states_list = np.arange(self.tot_states_num)
         batch_list = np.split(states_list, np.arange(b, self.tot_states_num, b))
         # pdb.set_trace()
-
+        it = 0
         while True:
+            it += 1
             value_fn = self.policy_to_value_fn(policy_curr)
             t_pi = self.get_t_pi(value_fn, eps)
             U = [u for u, a in t_pi]
@@ -160,5 +164,5 @@ class mdp_solver(object):
                         u_list.append(t_pi[ind])
                 policy_curr = self.modify_policy(policy_curr, u_list)
 
-        self.output_print(value_fn, policy_curr)
-        return value_fn, policy_curr
+        # self.output_print(value_fn, policy_curr)
+        return value_fn, policy_curr, it

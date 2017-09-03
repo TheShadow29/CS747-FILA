@@ -2,6 +2,7 @@ import numpy as np
 from mdp_algos import mdp_solver
 import random
 import argparse
+import pdb
 
 
 def read_data(fname):
@@ -15,6 +16,7 @@ def read_data(fname):
     tot_action_num = int(mdp_file_lines[1])
 
     reward_string = [m.split('\t')[:-1] for m in mdp_file_lines[2:2+tot_action_num*tot_states_num]]
+    # pdb.set_trace()
     reward_fn = np.array(reward_string, dtype=np.float32).reshape((tot_states_num,
                                                                    tot_action_num, tot_states_num))
     trans_string = [m.split('\t')[:-1] for m in mdp_file_lines[2+tot_action_num*tot_states_num:-1]]
@@ -29,7 +31,7 @@ if __name__ == '__main__':
     parser.add_argument("--mdp", type=str, help="file path for mdp")
     parser.add_argument('--randomseed', type=int, help='random seed')
     parser.add_argument('--algorithm', type=str, help='which algo')
-    parser.add_argument('--batchsize', type=float, help='batch size for bspi')
+    parser.add_argument('--batchsize', type=int, help='batch size for bspi')
 
     args = parser.parse_args()
 
@@ -55,10 +57,14 @@ if __name__ == '__main__':
         opt_value_fn, opt_policy = solver.linear_programming()
     elif algo == 'hpi':
         # print('Howard Policy Iteration')
-        opt_value_fn, opt_policy = solver.howard_pi()
+        opt_value_fn, opt_policy, nit = solver.howard_pi()
     elif algo == 'rpi':
         # print('Random Policy Iteration')
-        opt_value_fn, opt_policy = solver.random_pi()
+        opt_value_fn, opt_policy, nit = solver.random_pi()
     elif algo == 'bspi':
-        # print('BSPI')
-        opt_value_fn, opt_policy = solver.batch_switch_pi()
+        print('BSPI')
+        opt_value_fn, opt_policy, nit = solver.batch_switch_pi()
+
+    solver.output_print(opt_value_fn, opt_policy)
+    if algo != 'lp':
+        print(nit)
