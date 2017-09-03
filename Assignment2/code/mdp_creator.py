@@ -40,4 +40,4 @@ if not os.path.exists(tdir):
 
 for i in range(100):
     fname = tdir + str(i) + '.txt'
-    create_mdp(fname)
+    create_mdp(fname, 50, 2)

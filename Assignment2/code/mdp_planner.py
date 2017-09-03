@@ -62,7 +62,7 @@ if __name__ == '__main__':
         # print('Random Policy Iteration')
         opt_value_fn, opt_policy, nit = solver.random_pi()
     elif algo == 'bspi':
-        print('BSPI')
+        # print('BSPI')
         opt_value_fn, opt_policy, nit = solver.batch_switch_pi()
 
     solver.output_print(opt_value_fn, opt_policy)

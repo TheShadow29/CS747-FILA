@@ -78,8 +78,10 @@ class mdp_solver(object):
             # print(pulp.value(v_star[s]))
         # print(value_func)
         policy = self.value_func_to_policy(value_func)
+        value_fn = self.policy_to_value_fn(policy)
         # self.output_print(value_func, policy)
-        return value_func, policy
+        # pdb.set_trace()
+        return value_fn, policy
 
     def q_pi(self, s, a, value_fn):
         return sum([self.trans_matrix[s, a, s_prime] *
@@ -108,8 +110,12 @@ class mdp_solver(object):
         it = 0
         while True:
             it += 1
+            print(it)
             value_fn = self.policy_to_value_fn(policy_curr)
             t_pi = self.get_t_pi(value_fn, eps)
+            # print(it, len(t_pi))
+            # print(it, value_fn[0])
+            # pdb.set_trace()
             if len(t_pi) == 0:
                 break
             else:
@@ -148,6 +154,7 @@ class mdp_solver(object):
         it = 0
         while True:
             it += 1
+            print(it)
             value_fn = self.policy_to_value_fn(policy_curr)
             t_pi = self.get_t_pi(value_fn, eps)
             U = [u for u, a in t_pi]
