@@ -109,8 +109,8 @@ class mdp_solver(object):
         policy_curr = np.zeros(self.tot_states_num, dtype=int)
         it = 0
         while True:
-            it += 1
-            print(it)
+            # it += 1
+            # print(it)
             value_fn = self.policy_to_value_fn(policy_curr)
             t_pi = self.get_t_pi(value_fn, eps)
             # print(it, len(t_pi))
@@ -119,6 +119,8 @@ class mdp_solver(object):
             if len(t_pi) == 0:
                 break
             else:
+                it += 1
+                # print(it)
                 policy_curr = self.modify_policy(policy_curr, t_pi)
 
         # self.output_print(value_fn, policy_curr)
@@ -128,16 +130,18 @@ class mdp_solver(object):
         eps = 1e-6
         policy_curr = np.zeros(self.tot_states_num, dtype=int)
         it = 0
+        np.random.seed(self.rand_seed)
         while True:
-            it += 1
             value_fn = self.policy_to_value_fn(policy_curr)
             t_pi = self.get_t_pi(value_fn, eps)
             if len(t_pi) == 0:
                 break
             else:
+                it += 1
                 U = list()
                 for i in range(len(t_pi)):
-                    if random.random() > 0.5:
+                    # if random.random() > 0.5:
+                    if np.random.random_sample() < 0.5:
                         U.append(t_pi[i])
                 policy_curr = self.modify_policy(policy_curr, U)
 
@@ -153,14 +157,15 @@ class mdp_solver(object):
         # pdb.set_trace()
         it = 0
         while True:
-            it += 1
-            print(it)
+
+            # print(it)
             value_fn = self.policy_to_value_fn(policy_curr)
             t_pi = self.get_t_pi(value_fn, eps)
             U = [u for u, a in t_pi]
             if len(t_pi) == 0:
                 break
             else:
+                it += 1
                 j = int(np.ceil(self.tot_states_num/b)) - 1
                 # pdb.set_trace()
                 while min(batch_list[j]) > max(U):
