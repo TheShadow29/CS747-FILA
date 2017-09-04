@@ -84,8 +84,8 @@ if __name__ == '__main__':
             opt_value_fn, opt_policy, nit = solver.batch_switch_pi()
 
         solver.output_print(opt_value_fn, opt_policy)
-        if algo != 'lp':
-            print(nit)
+        # if algo != 'lp':
+        #     print(nit)
     else:
         tot_files = len(os.listdir(fname)[:])
         hpi_nit_arr = np.zeros(tot_files)
