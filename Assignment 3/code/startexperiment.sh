@@ -6,12 +6,12 @@ mkdir -p results/random
 mkdir -p results/qlearn
 # mkdir -p results/sarsa
 
-for((n=0;n<5;n++))
+for((n=0;n<1;n++))
 do
 	echo "----------------    Q Learning $n    ------------------"
 	# python3 ./server/server.py -port $((4000+$n)) -i 0 -rs $n -ne 1600 -q | tee "results/random_rs$n.txt" &
 	# python3 ./server/server.py -port $((4000+$n)) -i 0 -rs $n -ne 1600 -q --side 3 | tee "results/random/random_rs$n.txt" &
-	python3 ./server/server.py -port $((4000+$n)) -i 0 -rs $n -ne 50 -q --side 3 --noobfuscate| tee "results/qlearn/qlearn_rs$n.txt" &
+	python3 ./server/server.py -port $((4000+$n)) -i 0 -rs $n -ne 1600 -q --side 32 --noobfuscate --maxlength 1000| tee "results/qlearn/qlearn_rs$n.txt" &
 	sleep 1
 	# python3 ./client/client.py -port $((4000+$n)) -rs $n -gamma 1 -algo random
 	python3 ./client/client.py -port $((4000+$n)) -rs $n -gamma 1 -algo qlearning

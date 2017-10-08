@@ -6,6 +6,7 @@ import socket
 import sys
 from agent import Agent
 import numpy as np
+import pdb
 
 parser = argparse.ArgumentParser(description="Implements the Learning Agent.")
 parser.add_argument('-ip', '--ip', dest='ip', type=str, default='localhost', help='IP of server')
@@ -56,10 +57,11 @@ try:
         # Take action
         action = agent.get_action()
         state, reward, event = map(int, getResponse(action).strip().split())
-        # print(state, reward, event)
+        # print(agent.agent.ep_num, state, reward, event)
         event = 'continue terminated goal'.split()[event]
         # Observe Reward
         agent.observe(state, reward, event)
 finally:
     print('Closing Socket')
     sock.close()
+    # pdb.set_trace()

@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class RandomAgent:
     def __init__(self):
         self.step = 0
@@ -15,12 +16,14 @@ class RandomAgent:
 
 class q_learner(object):
     def __init__(self, num_states, state, gamma, randomseed):
+        # self.action_list = ['down', 'right', 'up', 'left']
         self.action_list = ['up', 'down', 'left', 'right']
         self.num_actions = len(self.action_list)
         self.state_list = np.arange(num_states)
         # May need to init using random, but keep terminal state as 0
-        self.q_table = np.random.random((num_states, self.num_actions))
-        self.lr = 0.1
+        # self.q_table = np.random.random((num_states, self.num_actions))
+        self.q_table = np.zeros((num_states, self.num_actions))
+        self.lr = 0.5
         self.new_ep_start = True
         self.ep_num = 0
         self.iter_num = 0
@@ -29,44 +32,53 @@ class q_learner(object):
         self.gamma = gamma
         self.curr_reward = 0
         self.curr_action = None
-        self.eps_greed = 0.1
+        self.eps_greed = 1
+        self.tot_iter = 1
         # self.cum_reward = 0
         return
 
     def observe(self, new_state, reward, event):
         if event == 'continue':
             self.iter_num += 1
-            self.next_state = new_state
-            self.curr_reward = reward
-            # self.cum_reward +=
+            self.tot_iter += 1
         if event == 'goal':
+            # print('---------------Starting NEW EPISODE-----------------')
             self.ep_num += 1
             self.new_ep_start = True
             self.iter_num = 0
         if event == 'terminated':
+            # print('Starting NEW EPISODE')
+            # print('---------------Starting NEW EPISODE-----------------')
             self.ep_num += 1
             self.new_ep_start = True
             self.iter_num = 0
+        self.next_state = new_state
+        self.curr_reward = reward
+        self.update_qtable()
         return
 
     def update_qtable(self):
         q_curr_s_curr_a = self.q_table[self.curr_state, self.curr_action]
+        # print('Curr State Action Value', self.curr_state, self.curr_action, q_curr_s_curr_a)
         q_new_s_a = self.q_table[self.next_state, :]
         q_tmp = np.max(q_new_s_a - q_curr_s_curr_a)
 
         new_q_curr_s_curr_a = q_curr_s_curr_a + self.lr * (self.curr_reward + self.gamma * q_tmp)
         self.q_table[self.curr_state, self.curr_action] = new_q_curr_s_curr_a
+        qnew_curr_s_curr_a = self.q_table[self.curr_state, self.curr_action]
+        # print('New State Action Value', self.curr_state, self.curr_action, qnew_curr_s_curr_a)
         self.curr_state = self.next_state
+        return
 
     def get_action(self):
-        greedy_action = self.action_list[np.argmax(self.q_table[self.curr_state, :])]
-        random_action = self.action_list[np.random.randint(0, self.num_actions)]
-        if np.random.random() < self.eps_greed:
+        greedy_action = np.argmax(self.q_table[self.curr_state, :])
+        random_action = np.random.randint(0, self.num_actions)
+        if np.random.random() < self.eps_greed/self.tot_iter:
             self.curr_action = random_action
-            return random_action
+            # print('Taking Random Action Eps Greedy')
         else:
             self.curr_action = greedy_action
-            return greedy_action
+        return self.action_list[self.curr_action]
 
 
 class Agent:
