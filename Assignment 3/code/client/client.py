@@ -5,6 +5,7 @@ import argparse
 import socket
 import sys
 from agent import Agent
+import numpy as np
 
 parser = argparse.ArgumentParser(description="Implements the Learning Agent.")
 parser.add_argument('-ip', '--ip', dest='ip', type=str, default='localhost', help='IP of server')
@@ -48,13 +49,14 @@ try:
     print('Requesting environment info')
     numStates, state = map(int, getResponse('info').strip().split())
     print('Number of States: {}, Current State: {}\n=========='.format(numStates, state))
-
+    np.random.seed(args.randomseed)
     agent = Agent(numStates, state, args.gamma, args.lamb, args.algorithm.lower(), args.randomseed)
 
     while True:
         # Take action
-        action = agent.getAction()
+        action = agent.get_action()
         state, reward, event = map(int, getResponse(action).strip().split())
+        # print(state, reward, event)
         event = 'continue terminated goal'.split()[event]
         # Observe Reward
         agent.observe(state, reward, event)
