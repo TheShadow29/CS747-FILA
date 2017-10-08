@@ -61,11 +61,12 @@ class q_learner(object):
         q_curr_s_curr_a = self.q_table[self.curr_state, self.curr_action]
         # print('Curr State Action Value', self.curr_state, self.curr_action, q_curr_s_curr_a)
         q_new_s_a = self.q_table[self.next_state, :]
-        q_tmp = np.max(q_new_s_a - q_curr_s_curr_a)
+        q_new_s_a_max = np.max(q_new_s_a)
+        q_tmp = self.gamma * q_new_s_a_max - q_curr_s_curr_a
 
-        new_q_curr_s_curr_a = q_curr_s_curr_a + self.lr * (self.curr_reward + self.gamma * q_tmp)
+        new_q_curr_s_curr_a = q_curr_s_curr_a + self.lr * (self.curr_reward + q_tmp)
         self.q_table[self.curr_state, self.curr_action] = new_q_curr_s_curr_a
-        qnew_curr_s_curr_a = self.q_table[self.curr_state, self.curr_action]
+        # qnew_curr_s_curr_a = self.q_table[self.curr_state, self.curr_action]
         # print('New State Action Value', self.curr_state, self.curr_action, qnew_curr_s_curr_a)
         self.curr_state = self.next_state
         return
@@ -79,6 +80,9 @@ class q_learner(object):
         else:
             self.curr_action = greedy_action
         return self.action_list[self.curr_action]
+
+# class sarsa(object):
+
 
 
 class Agent:
