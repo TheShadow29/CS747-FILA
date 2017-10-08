@@ -14,8 +14,8 @@ class RandomAgent:
         pass
 
 
-class q_learner(object):
-    def __init__(self, num_states, state, gamma, randomseed):
+class simple_learner(object):
+    def __init__(self, num_states, state, gamma):
         # self.action_list = ['down', 'right', 'up', 'left']
         self.action_list = ['up', 'down', 'left', 'right']
         self.num_actions = len(self.action_list)
@@ -58,6 +58,22 @@ class q_learner(object):
         return
 
     def update_qtable(self):
+        return
+
+    def get_action(self):
+        greedy_action = np.argmax(self.q_table[self.curr_state, :])
+        random_action = np.random.randint(0, self.num_actions)
+        if np.random.random() < self.eps_greed/self.tot_iter:
+            self.curr_action = random_action
+            # print('Taking Random Action Eps Greedy')
+        else:
+            self.curr_action = greedy_action
+        return self.action_list[self.curr_action]
+
+
+class q_learner(simple_learner):
+
+    def update_qtable(self):
         q_curr_s_curr_a = self.q_table[self.curr_state, self.curr_action]
         # print('Curr State Action Value', self.curr_state, self.curr_action, q_curr_s_curr_a)
         q_new_s_a = self.q_table[self.next_state, :]
@@ -71,18 +87,45 @@ class q_learner(object):
         self.curr_state = self.next_state
         return
 
-    def get_action(self):
-        greedy_action = np.argmax(self.q_table[self.curr_state, :])
+
+class sarsa_lamb(simple_learner):
+    def __init__(self, num_states, state, gamma, lamb):
+        simple_learner.__init__(self, num_states, state, gamma)
+        self.lamb = lamb
+        self.next_action = None
+        self.elig_trace = np.zeros((num_states, self.num_actions))
+        self.curr_action = np.random.randint(0, self.num_actions)
+        return
+
+    def get_next_action(self):
+        greedy_action = np.argmax(self.q_table[self.next_state, :])
         random_action = np.random.randint(0, self.num_actions)
         if np.random.random() < self.eps_greed/self.tot_iter:
-            self.curr_action = random_action
+            # self.curr_action = random_action
             # print('Taking Random Action Eps Greedy')
+            self.next_action = random_action
         else:
-            self.curr_action = greedy_action
+            # self.curr_action = greedy_action
+            self.next_action = greedy_action
+        # return self.action_list[self.curr_action]  #
+        # return a_dash
+        return
+
+    def update_qtable(self):
+        # a_dash = self.get_next_action()
+        self.get_next_action()
+        q_curr_s_curr_a = self.q_table[self.curr_state, self.curr_action]
+        q_next_s_next_a = self.q_table[self.next_state, self.next_action]
+        delta = self.curr_reward + self.gamma * q_next_s_next_a - q_curr_s_curr_a
+        self.elig_trace[self.curr_state, self.curr_action] += 1
+
+        self.q_table = self.q_table + self.lr * delta * self.elig_trace
+        self.elig_trace = self.gamma * self.lamb * self.elig_trace
+        self.curr_state = self.next_state
+        self.curr_action = self.next_action
+
+    def get_action(self):
         return self.action_list[self.curr_action]
-
-# class sarsa(object):
-
 
 
 class Agent:
@@ -97,9 +140,10 @@ class Agent:
             self.agent = RandomAgent()
         elif algorithm == 'qlearning':
             # raise NotImplementedError('Q Learning needs to be implemented')
-            self.agent = q_learner(numStates, state, gamma, randomseed)
+            self.agent = q_learner(numStates, state, gamma)
         elif algorithm == 'sarsa':
-            raise NotImplementedError('SARSA lambda needs to be implemented')
+            # raise NotImplementedError('SARSA lambda needs to be implemented')
+            self.agent = sarsa_lamb(numStates, state, gamma, lamb)
 
     def get_action(self):
         '''returns the action to perform'''
