@@ -89,68 +89,68 @@ class q_learner(simple_learner):
         return
 
 
-class sarsa_lamb(simple_learner):
-    def __init__(self, num_states, state, gamma, lamb):
-        simple_learner.__init__(self, num_states, state, gamma)
-        self.lamb = lamb
-        self.next_action = None
-        self.num_states = num_states
-        self.elig_trace = np.zeros((self.num_states, self.num_actions))
-        self.curr_action = np.random.randint(0, self.num_actions)
-        return
+# class sarsa_lamb(simple_learner):
+#     def __init__(self, num_states, state, gamma, lamb):
+#         simple_learner.__init__(self, num_states, state, gamma)
+#         self.lamb = lamb
+#         self.next_action = None
+#         self.num_states = num_states
+#         self.elig_trace = np.zeros((self.num_states, self.num_actions))
+#         self.curr_action = np.random.randint(0, self.num_actions)
+#         return
 
-    def observe(self, new_state, reward, event):
-        if event == 'continue':
-            self.iter_num += 1
-            self.tot_iter += 1
-        if event == 'goal':
-            # print('---------------Starting NEW EPISODE-----------------')
-            self.ep_num += 1
-            self.new_ep_start = True
-            self.iter_num = 0
-            self.elig_trace = np.zeros((self.num_states, self.num_actions))
-        if event == 'terminated':
-            # print('Starting NEW EPISODE')
-            # print('---------------Starting NEW EPISODE-----------------')
-            self.ep_num += 1
-            self.new_ep_start = True
-            self.iter_num = 0
-            self.elig_trace = np.zeros((self.num_states, self.num_actions))
-        self.next_state = new_state
-        self.curr_reward = reward
-        self.update_qtable()
-        return
+#     def observe(self, new_state, reward, event):
+#         if event == 'continue':
+#             self.iter_num += 1
+#             self.tot_iter += 1
+#         if event == 'goal':
+#             # print('---------------Starting NEW EPISODE-----------------')
+#             self.ep_num += 1
+#             self.new_ep_start = True
+#             self.iter_num = 0
+#             self.elig_trace = np.zeros((self.num_states, self.num_actions))
+#         if event == 'terminated':
+#             # print('Starting NEW EPISODE')
+#             # print('---------------Starting NEW EPISODE-----------------')
+#             self.ep_num += 1
+#             self.new_ep_start = True
+#             self.iter_num = 0
+#             self.elig_trace = np.zeros((self.num_states, self.num_actions))
+#         self.next_state = new_state
+#         self.curr_reward = reward
+#         self.update_qtable()
+#         return
 
-    def get_next_action(self):
-        greedy_action = np.argmax(self.q_table[self.next_state, :])
-        random_action = np.random.randint(0, self.num_actions)
-        # if np.random.random() < self.eps_greed/self.tot_iter:
-        if np.random.random() < self.eps_greed/self.ep_num:
-            # self.curr_action = random_action
-            # print('Taking Random Action Eps Greedy')
-            self.next_action = random_action
-        else:
-            # self.curr_action = greedy_action
-            self.next_action = greedy_action
-        # return self.action_list[self.curr_action]  #
-        # return a_dash
-        return
+#     def get_next_action(self):
+#         greedy_action = np.argmax(self.q_table[self.next_state, :])
+#         random_action = np.random.randint(0, self.num_actions)
+#         # if np.random.random() < self.eps_greed/self.tot_iter:
+#         if np.random.random() < self.eps_greed/self.ep_num:
+#             # self.curr_action = random_action
+#             # print('Taking Random Action Eps Greedy')
+#             self.next_action = random_action
+#         else:
+#             # self.curr_action = greedy_action
+#             self.next_action = greedy_action
+#         # return self.action_list[self.curr_action]  #
+#         # return a_dash
+#         return
 
-    def update_qtable(self):
-        # a_dash = self.get_next_action()
-        self.get_next_action()
-        q_curr_s_curr_a = self.q_table[self.curr_state, self.curr_action]
-        q_next_s_next_a = self.q_table[self.next_state, self.next_action]
-        delta = self.curr_reward + self.gamma * q_next_s_next_a - q_curr_s_curr_a
-        self.elig_trace[self.curr_state, self.curr_action] += 1
+#     def update_qtable(self):
+#         # a_dash = self.get_next_action()
+#         self.get_next_action()
+#         q_curr_s_curr_a = self.q_table[self.curr_state, self.curr_action]
+#         q_next_s_next_a = self.q_table[self.next_state, self.next_action]
+#         delta = self.curr_reward + self.gamma * q_next_s_next_a - q_curr_s_curr_a
+#         self.elig_trace[self.curr_state, self.curr_action] += 1
 
-        self.q_table = self.q_table + self.lr * delta * self.elig_trace
-        self.elig_trace = self.gamma * self.lamb * self.elig_trace
-        self.curr_state = self.next_state
-        self.curr_action = self.next_action
+#         self.q_table = self.q_table + self.lr * delta * self.elig_trace
+#         self.elig_trace = self.gamma * self.lamb * self.elig_trace
+#         self.curr_state = self.next_state
+#         self.curr_action = self.next_action
 
-    def get_action(self):
-        return self.action_list[self.curr_action]
+#     def get_action(self):
+#         return self.action_list[self.curr_action]
 
 
 class sarsa_lamb_new(object):
@@ -172,7 +172,7 @@ class sarsa_lamb_new(object):
         self.tot_iter = 1
         self.num_states = num_states
         self.elig_trace = np.zeros((self.num_states, self.num_actions))
-        self.eps2 = 0.1
+        # self.eps2 = 0.1
         self.trace = trace
         self.next_action = None
         self.lamb = lamb
@@ -202,7 +202,7 @@ class sarsa_lamb_new(object):
     def update_qtable(self):
         greedy_action = np.argmax(self.q_table[self.next_state, :])
         random_action = np.random.randint(0, self.num_actions)
-        if np.random.random() < self.eps2:
+        if np.random.random() < self.eps_greed/self.ep_num:
             self.next_action = random_action
         else:
             self.next_action = greedy_action
@@ -211,6 +211,7 @@ class sarsa_lamb_new(object):
 
         delta = self.curr_reward + self.gamma * q_next_s_next_a - q_curr_s_curr_a
         if self.trace == 'replace':
+            # print('Replace')
             self.elig_trace[self.curr_state, self.curr_action] = 1
         else:
             self.elig_trace[self.curr_state, self.curr_action] += 1
