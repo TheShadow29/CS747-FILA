@@ -51,7 +51,7 @@ try:
     numStates, state = map(int, getResponse('info').strip().split())
     print('Number of States: {}, Current State: {}\n=========='.format(numStates, state))
     np.random.seed(args.randomseed)
-    agent = Agent(numStates, state, args.gamma, args.lamb, args.algorithm.lower(), args.randomseed)
+    agent = Agent(numStates, state, args.gamma, args.lamb, args.algorithm.lower(), args.trace)
 
     while True:
         # Take action

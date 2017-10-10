@@ -3,7 +3,7 @@ import re
 import matplotlib.pyplot as plt
 import numpy as np
 import pickle
-
+import pdb
 # pat = re.compile(r'Pulls\s=\s(.*)Regret\s=\s(.*)')
 # pat = re.compile(r'\[(.*)\]')
 pat = re.compile(r'(\d*|-\d*?)(,|\])')
@@ -18,14 +18,14 @@ pat = re.compile(r'(\d*|-\d*?)(,|\])')
 #     return a1
 
 
-def plot_algo(algo):
+def plot_algo(algo, lamb=0):
     # tdir = '../results/' + algo + '/100000/'
     if algo == 'qlearn':
-        tdir = '../results/' + algo + '/' + algo + '_rs'
+        tdir = '../results/qlearn_rs'
     elif algo == 'sarsa':
-        tdir = '../results/sarsa/sarsa_accum_lambda0_rs'
+        tdir = '../results/sarsa_accum_lambda' + str(lamb) + '_rs'
     all_reward_list = list()
-    num_files = 5
+    num_files = 50
     for i in range(num_files):
         # fname = tdir + 'rs_' + str(i) + '.txt'
         reward_list = list()            #
@@ -44,10 +44,13 @@ def plot_algo(algo):
     # avg_r = list()
     horizon = len(reward_list)
     r1 = np.zeros([horizon, ])
-
-    for pr in all_reward_list:
-        r1 = r1 + np.array(pr).astype(float)
-
+    # pdb.set_trace()
+    try:
+        for ind, pr in enumerate(all_reward_list):
+            print(ind)
+            r1 = r1 + np.array(pr).astype(float)
+    except Exception as e:
+        pdb.set_trace()
     r1 = r1 / num_files
 
     x_axis = np.arange(1, horizon + 1)
@@ -57,51 +60,18 @@ def plot_algo(algo):
 
 
 x1, r1 = plot_algo('qlearn')
-x2, r2 = plot_algo('sarsa')
-# x3, r3 = plot_algo('KL-UCB')
-# x4, r4 = plot_algo('Thompson-Sampling')
-
-# with open('ins2_eps.pkl', 'w') as f:
-#     pickle.dump(r1, f)
-# with open('ins2_ucb.pkl', 'w') as f:
-#     pickle.dump(r2, f)
-# with open('ins2_klucb.pkl', 'w') as f:
-#     pickle.dump(r3, f)
-# with open('ins2_ths.pkl', 'w') as f:
-#     pickle.dump(r4, f)
-
-# plt.plot(np.log10(x1), r1, '-r', np.log10(x2), r2, '-g')
-# with open('./eval/ins1_eps.pkl') as f:
-#     r1 = pickle.load(f)
-# with open('./eval/ins1_ucb.pkl') as f:
-#     r2 = pickle.load(f)
-# with open('./eval/ins1_klucb.pkl') as f:
-#     r3 = pickle.load(f)
-# with open('./eval/ins1_ths.pkl') as f:
-#     r4 = pickle.load(f)
-# with open('./eval/ins2_eps.pkl') as f:
-#     r1 = pickle.load(f)
-# with open('./eval/ins2_ucb.pkl') as f:
-#     r2 = pickle.load(f)
-# with open('./eval/ins2_klucb.pkl') as f:
-#     r3 = pickle.load(f)
-# with open('./eval/ins2_ths.pkl') as f:
-#     r4 = pickle.load(f)
-
-# plt.plot(x1, r1, '-r', x2, r2, '-g', x3, r3, '-b', x4, r4, '-y')
-# x1 = np.arange(1, len(r1) + 1)
-# x2 = np.log10(x1)
+# x2, r2 = plot_algo('sarsa', 0)
+x3, r3 = plot_algo('sarsa', 0.2)
+x4, r4 = plot_algo('sarsa', 0.4)
+x5, r5 = plot_algo('sarsa', 0.6)
+x6, r6 = plot_algo('sarsa', 0.8)
 plt.plot(x1, r1, '-r', label="qlearning")
-plt.plot(x2, r2, '-g', label="sarsa")
-# plt.show()
-# plt.semilogx(x1, r1, '-r', label="Epsilon-greedy")
-# plt.plot(x1, r2, '-g', label='UCB')  #
-# plt.semilogx(x1, r2, '-g', label='UCB')  #
-# # plt.plot(x1, r3, '-b', label='KL-UCB')
-# plt.semilogx(x1, r3, '-b', label='KL-UCB')
-# # plt.plot(x1, r4, '-y', label='Thompson Sampling')
-# plt.semilogx(x1, r4, '-y', label='Thompson Sampling')
-plt.legend(bbox_to_anchor=(0.05, 1), loc=2, borderaxespad=0.)
+# plt.plot(x2, r2, '-g', label="sarsa0")
+plt.plot(x3, r3, '-b', label="sarsa0.2")
+plt.plot(x4, r4, '-y', label="sarsa0.4")
+plt.plot(x5, r5, '-c', label="sarsa0.6")
+plt.plot(x6, r6, '-m', label="sarsa0.8")
+plt.legend(bbox_to_anchor=(0.85, 0.4), loc=2, borderaxespad=0.)
 plt.show()
 # plt.savefig('Instance-25.png')
 # plt.savefig('Instance-5_linear.png')
