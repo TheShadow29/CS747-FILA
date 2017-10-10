@@ -18,7 +18,7 @@ pat = re.compile(r'(\d*|-\d*?)(,|\])')
 #     return a1
 
 
-def plot_algo(algo, lamb=0, trace='accum', tdir='../results/'):
+def plot_algo(algo, lamb=0, trace='accum', tdir='../results/instance0/'):
     # tdir = '../results/' + algo + '/100000/'
     # tdir = '../results/backup/'
     # tdir = '../results/'
@@ -64,10 +64,13 @@ def plot_algo(algo, lamb=0, trace='accum', tdir='../results/'):
     # plt.plot(x_axis, r1)
     # plt.show()
 
-def plot_sarsa2(tdir='../results/'):
-    num_files = 50
-    lamb_list = [0, 0.05, 0.1, 0.2, 0.25, 0.4, 0.5, 0.6, 0.75, 0.8, 0.9]
 
+def plot_sarsa2(tdir='../results/instance0/'):
+    num_files = 50
+    # lamb_list = [0, 0.05, 0.1, 0.2, 0.25, 0.4, 0.5, 0.6, 0.75, 0.8, 0.9]
+    lamb_list = [0, 0.05, 0.1, 0.2, 0.25, 0.4, 0.6, 0.75, 0.8, 0.9]
+    # exp_cum_reward_list = np.zeros(len(lamb_list))
+    exp_cum_reward_list = list()
     for lamb in lamb_list:
         top_dir = tdir + 'sarsa_accum_lambda' + str(lamb) + '_rs'
         all_reward_list = list()
@@ -82,25 +85,45 @@ def plot_sarsa2(tdir='../results/'):
             for i in rlist_tmp:
                 reward_list.append(i[0])
             all_reward_list.append(reward_list)
+        horizon = len(reward_list)
+        r1 = np.zeros([horizon, ])
+        # pdb.set_trace()
+        try:
+            for ind, pr in enumerate(all_reward_list):
+                print(ind)
+                r1 = r1 + np.array(pr).astype(float)
+        except Exception as e:
+            pdb.set_trace()
+        r1 = r1 / num_files
+        r2 = r1[:500]
+        exp_cum_reward_list.append(np.mean(r2))
+
+    # x1 = np.arange(len(lamb_list))
+
+    return lamb_list, exp_cum_reward_list
 
 
-x1, r1 = plot_algo('qlearn', tdir='../results/instance0/')
-x8, r8 = plot_algo('qlearn', tdir='../results/instance1/')
-x2, r2 = plot_algo('sarsa', lamb=0, tdir='../results/instance0/')  #
-x9, r9 = plot_algo('sarsa', lamb=0, tdir='../results/instance1/')
-# x3, r3 = plot_algo('sarsa', 0.2)
-# x4, r4 = plot_algo('sarsa', 0.4)
-# x5, r5 = plot_algo('sarsa', 0.6)
-# x6, r6 = plot_algo('sarsa', 0.8)
+# x1, r1 = plot_algo('qlearn', tdir='../results/instance0/')
+# x8, r8 = plot_algo('qlearn', tdir='../results/instance1/')
+# x2, r2 = plot_algo('sarsa', lamb=0, tdir='../results/instance0/')  #
+# x9, r9 = plot_algo('sarsa', lamb=0, tdir='../results/instance1/')
+# x3, r3 = plot_algo('sarsa', lamb=0.2)
+# x4, r4 = plot_algo('sarsa', lamb=0.4)  #
+# x5, r5 = plot_algo('sarsa', lamb=0.6)
+# x6, r6 = plot_algo('sarsa', lamb=0.8)
+# x11, r11 = plot_algo('sarsa', lamb=0.9)
 # x7, r7 = plot_algo('sarsa', 0, 'replace')
-plt.plot(x1, r1, '-r', label="qlearning_inst0")
-plt.plot(x8, r8, '-g', label="qlearning_inst1")
-plt.plot(x2, r2, '-b', label="sarsa0_inst0")
-plt.plot(x9, r9, '-y', label="sarsa0_inst1")
-# plt.plot(x3, r3, '-b', label="sarsa0.2")
+x10, e10 = plot_sarsa2('../results/instance1/')
+plt.plot(x10, e10, '-r', label="exp_cum_reward_inst1")
+# plt.plot(x1, r1, '-r', label="qlearning_inst0")
+# plt.plot(x8, r8, '-g', label="qlearning_inst1")
+# plt.plot(x2, r2, '-b', label="sarsa0_inst0")
+# plt.plot(x9, r9, '-y', label="sarsa0_inst1")
+# plt.plot(x3, r3, '-g', label="sarsa0.2")
 # plt.plot(x4, r4, '-y', label="sarsa0.4")
 # plt.plot(x5, r5, '-c', label="sarsa0.6")
 # plt.plot(x6, r6, '-m', label="sarsa0.8")
+# plt.plot(x11, r11, '-k', label="sarsa0.9")
 # plt.plot(x7, r7, '-k', label='sarsa0repl')
 
 plt.legend(bbox_to_anchor=(0.75, 0.4), loc=2, borderaxespad=0.)
@@ -108,4 +131,4 @@ plt.legend(bbox_to_anchor=(0.75, 0.4), loc=2, borderaxespad=0.)
 # plt.savefig('Instance-25.png')
 # plt.savefig('Instance-5_linear.png')
 # plt.savefig('qlearn_instance_0_1')
-# plt.savefig('qlearn_sarsa0_instance_0_1')
+plt.savefig('sarsa_lamb_instance_1.png')
