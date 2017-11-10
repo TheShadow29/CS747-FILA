@@ -2,6 +2,10 @@ import numpy as np
 import pdb
 import re
 import matplotlib.pyplot as plt
+# from pylatex import Math
+# from pylatex import Matrix
+import argparse
+
 
 class mdp_baird(object):
     def __init__(self, weights):
@@ -43,7 +47,11 @@ class mdp_baird(object):
 
     def get_out_val_fn(self, curr_state):
         # pdb.set_trace()
-        return np.dot(self.weights, self.feat_mat[curr_state, :])
+        # assert curr_state >= 0
+        if curr_state >= 0:
+            return np.dot(self.weights, self.feat_mat[curr_state, :])
+        else:
+            return 0
         # try:
         # return np.dot(self.weights, self.feat_mat[curr_state, :])
         # except Exception as e:
@@ -71,52 +79,6 @@ class td_lambda(object):
         self.gamma = self.mdp.gamma
         # self.exp_type = exp_type
         self.str_f = '{:.6} {:.6} {:.6} {:.6} {:.6} {:.6}\n'
-
-    def train_model(self):
-        for ep in range(self.N):
-            curr_state = self.mdp.get_init_state()
-            fv_curr_state = self.mdp.get_feat_vec(curr_state)
-            elig_trace = np.zeros(self.mdp.weights.shape)
-            vf_prev = 0
-            next_state = curr_state
-            nit = 0
-            while (next_state != -1):
-                next_state = self.mdp.get_next_state(curr_state)
-                vf_curr = self.mdp.get_out_val_fn(curr_state)
-                vf_next = self.mdp.get_out_val_fn(next_state)
-                delta = self.gamma * vf_next - vf_curr
-                tmp1 = self.gamma * self.lamb
-                tmp2 = np.dot(elig_trace, fv_curr_state)
-                tmp3 = (1 - self.lr * self.gamma * self.lamb * tmp2)
-                elig_trace = tmp1 * elig_trace + tmp3 * fv_curr_state
-                self.mdp.weights = (self.mdp.weights + self.lr * (delta + vf_curr - vf_prev) *
-                                    elig_trace - self.lr * (vf_curr - vf_prev) * fv_curr_state)
-                vf_prev = vf_curr
-                curr_state = next_state
-                fv_curr_state = self.mdp.get_feat_vec(next_state)
-                nit += 1
-
-            print('ep_no', ep, 'num_iterations', nit)
-
-    def train_model1(self):
-        for ep in range(self.N):
-            curr_state = self.mdp.get_init_state()
-            fv_curr_state = self.mdp.get_feat_vec(curr_state)
-            # vf_prev = 0
-            next_state = curr_state
-            nit = 0
-            while (next_state != -1):
-                next_state = self.mdp.get_next_state(curr_state)
-                vf_curr = self.mdp.get_out_val_fn(curr_state)
-                vf_next = self.mdp.get_out_val_fn(next_state)
-                delta = self.gamma * vf_next - vf_curr
-                self.mdp.weights = self.mdp.weights + self.lr * delta * fv_curr_state
-                # vf_prev = vf_curr
-                curr_state = next_state
-                fv_curr_state = self.mdp.get_feat_vec(next_state)
-                nit += 1
-
-            print('ep_no', ep, 'num_iterations', nit)
 
     def train_model_exp1(self):
         str_to_write = ''
@@ -193,16 +155,20 @@ def graph_plot():
     # vf_array2[vf_array1 > 1] = np.log10(vf_array1[vf_array1 > 1])
     # vf_array2[np.abs(vf_array1) < 1] = 0
     vf_array2 = vf_array1
-    plt.plot(x_ax, vf_array2[:, 0])
-    plt.plot(x_ax, vf_array2[:, 1])
-    plt.plot(x_ax, vf_array2[:, 2])
-    plt.plot(x_ax, vf_array2[:, 3])
-    plt.plot(x_ax, vf_array2[:, 4])
-    plt.plot(x_ax, vf_array2[:, 5])
+    plt.plot(x_ax, vf_array2[:, 0], label='state 1')
+    plt.plot(x_ax, vf_array2[:, 1], label='state 2')
+    plt.plot(x_ax, vf_array2[:, 2], label='state 3')
+    plt.plot(x_ax, vf_array2[:, 3], label='state 4')
+    plt.plot(x_ax, vf_array2[:, 4], label='state 5')
+    plt.plot(x_ax, vf_array2[:, 5], label='state 6')
+    # plt.xlabel('Number of TD(0) updates')
+    # plt.ylabel('Value Function of all states')
     # plt.ylim(-1e31, 1e31)
-    # plt.yscale('symlog')
+    plt.yscale('symlog')
+    plt.legend(bbox_to_anchor=(.05, 1), loc=2, borderaxespad=0.)
     # pdb.set_trace()
     plt.show()
+    # plt.savefig('exp1.png')
 
 
 def read_arr(fname):
@@ -233,26 +199,62 @@ def graph_plot2():
     # plt.yscale('symlog')
     plt.legend(bbox_to_anchor=(.85, 1), loc=2, borderaxespad=0.)
     plt.show()
+    # plt.savefig('exp2.png')
 
 
 if __name__ == '__main__':
     # weights = np.array([1, 1, 1, 1, 1, 10, 1])
-    weights = np.array([1, 1, 1, 1, 1, 1, 1])
+    # weights = np.array([1, 1, 1, 1, 1, 1, 1])
     # weights = np.array([-1.2, 1, 14, 1, 1, 10, 1])
     # weights = np.array([0, 0, 0, 0, 0, 0, 0])
-    N = 1000000
+    # N = 1000000
     pat = re.compile(r'([-\d.+e]*)\s([-\d.+e]*)\s([-\d.+e]*)\s([-\d.+e]*)\s([-\d.+e]*)\s([-\d.+e]*)\n')
     # N = 5000
     # lamb = 0
-    lamb = 0.2
+    # lamb = 0.2
     # lamb = 0.4
     # lamb = 0.6
     # lamb = 0.8
     # lamb = 1
+    parser = argparse.ArgumentParser()
+    parser.add_argument("exp", type=int, help="experiment")
+    parser.add_argument('N', type=int, help='N')
+    parser.add_argument('l', type=int, help='lamb')
+    parser.add_argument('w1', type=float, help='w1')
+    parser.add_argument('w2', type=float, help='w2')
+    parser.add_argument('w3', type=float, help='w3')
+    parser.add_argument('w4', type=float, help='w4')
+    parser.add_argument('w5', type=float, help='w5')
+    parser.add_argument('w6', type=float, help='w6')
+    parser.add_argument('w7', type=float, help='w7')
+
+    args = parser.parse_args()
+
+    exp = args.exp
+    assert exp == 1 or exp == 2
+    N = args.N
+    lamb = args.l
+    assert lamb >= 0 and lamb <= 1
+    weights = np.zeros(7)
+    weights[0] = args.w1
+    weights[1] = args.w2
+    weights[2] = args.w3
+    weights[3] = args.w4
+    weights[4] = args.w5
+    weights[5] = args.w6
+    weights[6] = args.w7
+
+    # print(exp, N, lamb, weights)
+
     mdp_inst = mdp_baird(weights)
     td_0 = td_lambda(mdp_inst, N, lamb)
+    if exp == 1:
+        td_0.train_model_exp1()
+    elif exp == 2:
+        td_0.train_model2()
     # td_0.train_model()
     # td_0.train_model1()
     # td_0.train_model_exp1()     #
     # td_0.train_model2()
     #
+    # graph_plot()
